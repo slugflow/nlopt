@@ -2505,6 +2505,11 @@ nlopt_result nlopt_slsqp(unsigned n, nlopt_func f, void *f_data,
 	  case 1:{ /* don't need grad unless we don't have it yet */
 	      double *newgrad = 0;
 	      double *newcgrad = 0;
+		want_grad = 1; 
+		/* In some cases, after some iterations, mode becomes 1, want_grad becomes 0, thus newcgrad becomes nullptr.
+		However, nlopt_eval_constraint will use grad (which becomes nullptr), that is why segfault occurs.
+		I'm not sure why it is necessary to consider the case where we don't need gradient (SLSQP is gradient-based).
+		So I simply add this line to enforce we need gradient. Jingren 2021/11/30 */
 	      if (want_grad) {
 		  newgrad = grad;
 		  newcgrad = cgradtmp;
